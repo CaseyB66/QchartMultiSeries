@@ -22,6 +22,10 @@ QchartMain::QchartMain(QWidget *parent)
     , m_triWaveAmp(10.0)
 {
     ui->setupUi(this);
+    QRect avgeom = QGuiApplication::primaryScreen()->availableGeometry();
+    QSize newsz = QSize(avgeom.width() * 0.6, avgeom.height() * 0.88);
+    resize(newsz);
+
     m_sampleRate_Hz = int(1000 / m_sampleTime_msec);
     m_strtPos = 0;
     m_endPos = -1;
