@@ -19,7 +19,6 @@ public:
     QchartMain(QWidget *parent = nullptr);
     ~QchartMain();
     void addData();
-    void triangleWave();
     void setupChart(short nr);
     // QPointF getXRange(short nr);
     // QPointF getYRange(short nr);

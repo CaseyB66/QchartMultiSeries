@@ -97,8 +97,10 @@ void Qchartrealtime::setAxisRange(short nr, QPointF minrng, QPointF maxrng)
                         break;
                 }
             }
-            qobject_cast<QValueAxis *>(*axsItr)->setMax(maxx + 0.1);
-            qobject_cast<QValueAxis *>(*axsItr)->setMin(minx - 0.1);
+            if (qobject_cast<QValueAxis *>(*axsItr)->max() < maxx)
+                qobject_cast<QValueAxis *>(*axsItr)->setMax(maxx + (maxx - minx) / 5.0);
+            if (qobject_cast<QValueAxis *>(*axsItr)->min() > minx)
+                qobject_cast<QValueAxis *>(*axsItr)->setMin(minx - (maxx - minx) / 5.0);
             // qobject_cast<QValueAxis *>(*axsItr)->setTickType(QValueAxis::TicksDynamic);
             // qobject_cast<QValueAxis *>(*axsItr)->setTickCount(6);
             // qobject_cast<QValueAxis *>(*axsItr)->setTickInterval((maxx - minx) / 6);
@@ -113,8 +115,10 @@ void Qchartrealtime::setAxisRange(short nr, QPointF minrng, QPointF maxrng)
                         break;
                 }
             }
-            qobject_cast<QValueAxis *>(*axsItr)->setMax(maxy + 0.1);
-            qobject_cast<QValueAxis *>(*axsItr)->setMin(miny - 0.1);
+            if (qobject_cast<QValueAxis *>(*axsItr)->max() < maxy)
+                qobject_cast<QValueAxis *>(*axsItr)->setMax(maxy + (maxy - miny) / 5.0);
+            if (qobject_cast<QValueAxis *>(*axsItr)->min() > miny)
+                qobject_cast<QValueAxis *>(*axsItr)->setMin(miny - (maxy - miny) / 5.0);
             break;
         }
         srsItr++;

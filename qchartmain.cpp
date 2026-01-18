@@ -163,39 +163,6 @@ void QchartMain::timerEvent(QTimerEvent *event)
         addData();
     }
 }
-void QchartMain::triangleWave()
-{
-    const double m_triWavePerd = 4.0; // Seconds
-    const double m_triWaveAmp = 5.0;  // Peak m_triWaveAmp
-    int totalSamples = 1;
-    for (int i = 0; i < totalSamples; ++i) {
-        // 1. Calculate current time
-        double t = i / m_sampleRate_Hz;
-
-        // 2. Calculate the position within the cycle (0.0 to 1.0)
-        // fmod helps wrap the time around the m_triWavePerd
-        double phase = fmod(t, m_triWavePerd) / m_triWavePerd;
-
-        // 3. Triangle wave formula:
-        // Standard shape: 4 * abs(x - 0.5) - 1  (results in -1 to 1)
-        double value = 2.0 * fabs(2.0 * (phase - floor(phase + 0.5))) * m_triWaveAmp;
-
-        // Offset to make it centered at zero (-5 to 5)
-        double centeredValue = 2.0 * m_triWaveAmp * (fabs(2.0 * phase - 1.0) - 0.5);
-
-        // For this example, let's use a simple rising/falling approach:
-        double tri;
-        if (phase < 0.25) {
-            tri = (phase / 0.25) * m_triWaveAmp; // 0 to 5
-        } else if (phase < 0.75) {
-            tri = m_triWaveAmp - ((phase - 0.25) / 0.5) * (2 * m_triWaveAmp); // 5 to -5
-        } else {
-            tri = -m_triWaveAmp + ((phase - 0.75) / 0.25) * m_triWaveAmp; // -5 to 0
-        }
-
-    }
-}
-
 void QchartMain::addData()
 {
     short nr = 1;
