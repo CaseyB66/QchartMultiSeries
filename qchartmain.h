@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTimerEvent>
 #include <QtCharts/QXYSeries>
+#include "MultiLineseries.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +21,12 @@ public:
     ~QchartMain();
     void addData();
     void setupChart(short nr);
+    MultiLineSeries *getLineSrsPtr(short nn)
+    {
+        if (nn > 2)
+            return nullptr;
+        return flwseries[nn];
+    }
     // QPointF getXRange(short nr);
     // QPointF getYRange(short nr);
 
@@ -35,10 +42,10 @@ protected slots:
 
 private:
     Ui::QchartMain *ui;
-    QList<QPointF> m_data[3], m_buffData[3];
+    // QList<QPointF> m_data[3], m_buffData[3];
     qsizetype m_buffSz;
-    qsizetype m_strtPos, m_endPos;
-    QXYSeries *flwseries[3];
+    qsizetype m_endPos;
+    MultiLineSeries *flwseries[3];
     qreal m_cyclePerd_sec;
     int m_timerID, m_timerMsec;
     int m_sampleTime_msec;

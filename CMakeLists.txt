@@ -8,6 +8,7 @@ endif()
 
 set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/charts/zoomlinechart")
 find_package(Qt6 REQUIRED COMPONENTS Charts Core Gui)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 qt_standard_project_setup()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -20,10 +21,13 @@ qt_add_executable(QChartRealTime
   QChartRealTime.h
   QChartRealTime.cpp
   qchartmain.ui
+  MultiLineseries.h
+  MultiLineseries.cpp
 )
 
 
 target_link_libraries(QChartRealTime PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt::Charts Qt::Core Qt::Gui)
+target_link_libraries(QChartRealTime PRIVATE Qt6::Core)
 
 set_target_properties(QChartRealTime PROPERTIES
     MACOSX_BUNDLE TRUE
