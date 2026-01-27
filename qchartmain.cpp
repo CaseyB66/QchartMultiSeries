@@ -14,12 +14,15 @@ QchartMain::QchartMain(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::QchartMain)
     , m_timerID(-1)
-    , m_timerMsec(50)
+    , m_timerMsec(30)
     , m_sampleTime_msec(10)
     , m_cyclePerd_sec(2.0)
     , m_triWavePerd(4.0)
     , m_yAmp(1.0)
+    , m_xAmp(1.0)
     , m_triWaveAmp(10.0)
+    , m_tSec(0.0)
+    , m_triWaveVlu(0.0)
 {
     ui->setupUi(this);
     QRect avgeom = QGuiApplication::primaryScreen()->availableGeometry();
@@ -158,54 +161,52 @@ void QchartMain::timerEvent(QTimerEvent *event)
         addData();
     }
 }
+
 void QchartMain::addData()
 {
     short nr = 0;
+    qreal tsec, rads;
     // go back one timer click...
     for (int i = m_endPos - m_timerMsec / m_sampleTime_msec; i < m_endPos; i++) {
+        nr = 0;
         m_yAmp *= 1.001;
-        qreal rads = ((qreal(i) * m_sampleTime_msec / 1000.0) / m_cyclePerd_sec) * 2 * M_PI;
-        QPointF p(qCos(rads) + m_endPos * 0.003, m_yAmp * qSin(rads));
+        m_xAmp *= 1.002;
+        tsec = m_tSec + m_sampleTime_msec / 1000.0;
+        rads = (tsec / m_cyclePerd_sec) * 2 * M_PI;
+        QPointF p(m_xAmp * qCos(rads), m_yAmp * qSin(rads));
         p.ry() += QRandomGenerator::global()->bounded(0.2);
         flwseries[nr]->updateValues(p.rx(), p.ry());
         flwseries[nr]->appendNewData(p);
-    }
-    if (true) {
-        nr = 1;
-        for (int i = m_endPos - m_timerMsec / m_sampleTime_msec; i < m_endPos; i++) {
-            m_yAmp *= 1.001;
-            qreal rads = ((qreal(i) * m_sampleTime_msec / 1000.0) / (2 * m_cyclePerd_sec / 3)) * 2
-                         * M_PI;
-            QPointF p(qCos(rads) + m_endPos * 0.00003, m_yAmp * qSin(rads));
+        if (true) {
+            nr = 1;
+            m_yAmp *= 1.0005;
+            qreal rads = (tsec / (2 * m_cyclePerd_sec / 3)) * 2 * M_PI;
+            QPointF p(qCos(rads), m_yAmp * qSin(rads));
             p.ry() += QRandomGenerator::global()->bounded(0.2);
             flwseries[nr]->updateValues(p.rx(), p.ry());
             flwseries[nr]->appendNewData(p);
         }
-    }
-    if (true) {
-        nr = 2;
-        for (int i = m_endPos - m_timerMsec / m_sampleTime_msec; i < m_endPos; i++) {
-            // 1. Calculate current time
+        if (true) {
+            nr = 2;
             m_triWaveAmp *= 1.0003;
-            double t_sec = double(i) / m_sampleRate_Hz;
-            qreal triSlope = m_triWaveAmp / (m_triWavePerd / m_sampleRate_Hz);
+            rads = (tsec / m_triWavePerd) * 2 * M_PI;
 
-            // 2. Calculate the position within the cycle (0.0 to 1.0)
-            // fmod helps wrap the time around the m_triWavePerd
-            double phase = fmod(t_sec, m_triWavePerd) / m_triWavePerd;
+            qreal wv = qCos(rads);
+            qreal triSlope = m_triWaveAmp; //  / (m_triWavePerd / m_sampleRate_Hz);
+            double vlu;
+            if (wv < 0.0)
+                vlu = m_triWaveVlu + triSlope * m_sampleTime_msec / 1000.0;
+            else
+                vlu = m_triWaveVlu - triSlope * m_sampleTime_msec / 1000.0;
 
-            // 3. Triangle wave formula:
-            // Standard shape: 4 * abs(x - 0.5) - 1  (results in -1 to 1)
-            double vlu = 2.0 * fabs(2.0 * (phase - floor(phase + 0.5))) * m_triWaveAmp;
-
-            // Offset to make it centered at zero (-5 to 5)
-            double cntrVlu = 2.0 * m_triWaveAmp * (fabs(2.0 * phase - 1.0) - 0.5);
-            QPointF p(t_sec, cntrVlu);
+            QPointF p(tsec, vlu);
             p.ry() += QRandomGenerator::global()->bounded(0.2);
 
             flwseries[nr]->updateValues(p.rx(), p.ry());
             flwseries[nr]->appendNewData(p);
+            m_triWaveVlu = vlu;
         }
+        m_tSec = tsec;
     }
 }
 
@@ -240,9 +241,12 @@ void QchartMain::on_clearBtn_clicked()
     for (nr = 0; nr < 3; nr++) {
         flwseries[nr]->clearData();
     }
-    m_yAmp = 1.0;
+    m_yAmp = m_xAmp = 1.0;
     m_triWaveAmp = 10;
     m_endPos = -1;
+    m_tSec = 0.0;
+    m_triWaveVlu = 0.0;
+    m_endPos = 0;
     ui->theChart1->update();
     ui->theChart2->update();
 }

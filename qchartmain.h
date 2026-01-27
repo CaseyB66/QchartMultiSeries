@@ -51,6 +51,7 @@ private:
     int m_sampleTime_msec;
     qreal m_sampleRate_Hz;
     qreal m_triWavePerd;
-    qreal m_yAmp, m_triWaveAmp;
+    qreal m_triWaveVlu;
+    qreal m_tSec, m_yAmp, m_xAmp, m_triWaveAmp;
 };
 #endif // QCHARTMAIN_H

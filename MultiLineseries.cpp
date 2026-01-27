@@ -196,5 +196,9 @@ void MultiLineSeries::setAxesRange(QPointF minrng, QPointF maxrng, bool frc)
             qobject_cast<QValueAxis *>(*vaxsItr)->setMax(maxy + (maxy - miny) / 5.0);
         if (qobject_cast<QValueAxis *>(*vaxsItr)->min() > miny)
             qobject_cast<QValueAxis *>(*vaxsItr)->setMin(miny - (maxy - miny) / 5.0);
+        minx = qobject_cast<QValueAxis *>(*haxsItr)->min();
+        maxx = qobject_cast<QValueAxis *>(*haxsItr)->max();
+        miny = qobject_cast<QValueAxis *>(*vaxsItr)->min();
+        maxy = qobject_cast<QValueAxis *>(*vaxsItr)->max();
     }
 }
